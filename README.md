@@ -1,5 +1,7 @@
 # AutoTrack
 
+> **AutoTrack now lives in [HunterHelper](https://github.com/sage42k/HunterHelper).** It has the same features plus a fix for quick target switching during the global cooldown. New installs should use HunterHelper.
+
 **Hunters: target something, and your tracking follows.**
 
 Stop opening the tracking menu. Target a wolf and AutoTrack turns on Track Beasts. Target a ghoul and it switches to Track Undead. That is the whole idea, and it stays out of your way otherwise.
