@@ -8,7 +8,7 @@ Made for **WoW Forever** (game version 1.60.1).
 
 ## Download
 
-**[Download AutoTrack 0.1.1](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.1.1.zip)**
+**[Download AutoTrack 0.1.2](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.1.2.zip)**
 
 ## Install
 
@@ -47,11 +47,20 @@ Some game versions only let tracking change on a real key press. If AutoTrack de
 
 In key mode the game does not let add-ons change the key during combat, so press it after the fight if you targeted something mid fight.
 
+## Turn it off and on
+
+Want to pick tracking by hand for a while? Give AutoTrack a toggle key:
+
+1. Open **Options**, **Keybindings**, then **AutoTrack (Hunter)**.
+2. Bind a key to **AutoTrack: turn on or off**.
+
+Press it once and AutoTrack stops switching, so your own tracking choice stays. Press it again to turn it back on. One short chat line tells you which. It remembers your choice between sessions, and it is safe to press mid fight.
+
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `/autotrack on` / `/autotrack off` | Turn it on or off |
+| `/autotrack on` / `/autotrack off` | Turn it on or off (same as the toggle key) |
 | `/autotrack status` | Show what it is doing |
 | `/autotrack scope any` | Also switch for creatures you cannot attack (default: only attackable ones) |
 | `/autotrack default beasts` | Track to use for creatures with no hunter track, like critters (default: leave it alone) |

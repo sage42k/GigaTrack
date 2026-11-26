@@ -11,6 +11,8 @@
 --    blocked or forbidden for this addon out of combat, we fall back to a
 --    secure button the player keybinds. Its "spell" attribute is only ever
 --    changed out of combat.
+--  * The toggle keybind (AutoTrack_Toggle) only flips db.enabled. While off,
+--    refresh() returns before any tracking or secure attribute change.
 --  * If the client blocks SetTracking in combat, we remember that, hold the
 --    switch until combat ends and stay in automatic mode.
 local ADDON, ns = ...
@@ -53,6 +55,7 @@ local mode = "direct"       -- "direct" or "fallback"
 local lastSwitch = -1e9
 local retryArmed = false
 local pending = nil         -- { idx, key } awaiting confirmation
+local pendingClear = false  -- the button spell must be cleared once combat ends
 local pendingCombat = false -- a refresh was held back because of combat lockdown
 local combatBlocked = false -- the client refused SetTracking in combat
 local saidCombatBlocked = false
@@ -156,6 +159,7 @@ local function expect(idx, key)
 	pending = mine
 	C_Timer.After(CONFIRM_TIMEOUT, function()
 		if pending ~= mine then return end -- confirmed, or superseded
+		if not db or not db.enabled then pending = nil; return end -- turned off meanwhile
 		if isActive(idx) then pending = nil; return end
 		if wantedKey() ~= key then pending = nil; return end -- target moved on
 		enterFallback()
@@ -191,12 +195,35 @@ local function status()
 		db.enabled and "on" or "off", mode, db.scope, db.default == "none" and "none" or LABEL[db.default]))
 end
 
+-- Shared by /autotrack on|off and the keybind. Only a Lua flag is flipped, so
+-- it is safe in combat. Turning on in combat leaves the refresh for after the
+-- fight. Turning off clears the keybind button's spell so its key does nothing,
+-- but only out of combat (a secure attribute never changes in combat); a clear
+-- held back by combat happens when the fight ends.
+local function setEnabled(on)
+	db.enabled = on
+	if on then
+		pendingClear = false
+		print("AutoTrack on")
+		if InCombatLockdown() then pendingCombat = true else refresh() end
+	else
+		print("AutoTrack off (pick tracking by hand)")
+		if button then
+			if InCombatLockdown() then pendingClear = true else button:SetAttribute("spell", nil) end
+		end
+	end
+end
+
+-- Global for Bindings.xml. Addon-owned name; does nothing for non hunters.
+function AutoTrack_Toggle()
+	if not db then return end
+	setEnabled(not db.enabled)
+end
+
 local function slash(msg)
 	local cmd, arg = (msg or ""):lower():match("^%s*(%S*)%s*(%S*)")
 	if cmd == "on" or cmd == "off" then
-		db.enabled = cmd == "on"
-		say(cmd)
-		if db.enabled then refresh() end
+		setEnabled(cmd == "on")
 	elseif cmd == "scope" and (arg == "attackable" or arg == "any") then
 		db.scope = arg
 		say("scope " .. arg)
@@ -227,7 +254,7 @@ local function onEvent(self, event, a1)
 		for k, v in pairs(DEFAULTS) do
 			if db[k] == nil then db[k] = v end
 		end
-		db.version = "0.1.1"
+		db.version = "0.1.2"
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
@@ -240,6 +267,8 @@ local function onEvent(self, event, a1)
 	elseif event == "MINIMAP_UPDATE_TRACKING" then
 		confirm()
 	elseif event == "PLAYER_REGEN_ENABLED" then
+		if pendingClear and not db.enabled and button then button:SetAttribute("spell", nil) end
+		pendingClear = false
 		if pendingCombat then pendingCombat = false; refresh() end
 	elseif event == "ADDON_ACTION_BLOCKED" or event == "ADDON_ACTION_FORBIDDEN" then
 		if issecret(a1) or a1 ~= ADDON then return end
@@ -261,6 +290,7 @@ end
 -- Binding labels (our own names, not Blizzard's).
 BINDING_HEADER_AUTOTRACK = "AutoTrack (Hunter)"
 _G["BINDING_NAME_CLICK AutoTrackButton:LeftButton"] = "AutoTrack: track my target's type"
+BINDING_NAME_AUTOTRACK_TOGGLE = "AutoTrack: turn on or off"
 
 frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- New keybind, Options, Keybindings, AddOns, AutoTrack (Hunter), "AutoTrack: turn on or off". It does the same as `/autotrack on` and `/autotrack off`, saves the choice in `AutoTrackDB`, and prints one line: "AutoTrack on" or "AutoTrack off (pick tracking by hand)". It is safe in combat because it only flips a Lua flag. For non hunters it does nothing and prints nothing.
+- While off, AutoTrack makes no tracking changes and no secure attribute changes. In keybind mode, turning off clears the button's spell so its key does nothing (when you turn off in combat, the clear waits until the fight ends).
+- `/autotrack on` and `/autotrack off` now print the same two lines.
+
 ## 0.1.1
 
 - Automatic mode now switches tracking in combat too. C_Minimap.SetTracking has no combat restriction, so there is no reason to wait for the fight to end. The 3 second confirmation check works in combat as well.

@@ -2,7 +2,7 @@
 ## Title: AutoTrack
 ## Notes: Hunters: switches minimap tracking to match the creature type you target. /autotrack for options.
 ## Author: Sage42k
-## Version: 0.1.1
+## Version: 0.1.2
 ## IconTexture: Interface\Icons\Ability_Tracking
 ## SavedVariables: AutoTrackDB
 

@@ -1,4 +1,7 @@
 <Bindings>
 	<Binding name="CLICK AutoTrackButton:LeftButton" header="AUTOTRACK" category="ADDONS">
 	</Binding>
+	<Binding name="AUTOTRACK_TOGGLE" category="ADDONS">
+		AutoTrack_Toggle()
+	</Binding>
 </Bindings>
