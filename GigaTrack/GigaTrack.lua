@@ -1,8 +1,9 @@
--- AutoTrack. A reminder icon that is also the track button. Nothing switches by itself.
+-- GigaTrack. A reminder icon that is also the track button. Nothing switches by itself.
 --
 -- The icon shows the Track spell your target needs, until that track is active, and clicking it
--- casts that track. The icon IS the secure button AutoTrackButton, so a /click macro or a keybind
--- works too. HunterHelperAutoTrackButton is a legacy alias button that follows the same attributes.
+-- casts that track. The icon IS the secure button GigaTrackButton, so a /click macro or a keybind
+-- works too. AutoTrackButton and HunterHelperAutoTrackButton are alias buttons that follow the same attributes.
+-- While the old AutoTrack add-on is loaded, GigaTrack builds nothing and only imports its settings.
 -- A minimap button toggles the reminder and builds the one-key macro. It is a plain frame, never secure.
 --
 -- Rules this file keeps:
@@ -18,7 +19,7 @@
 --  * Macros are created or edited only out of combat.
 --  * No Blizzard global is written, nothing is hooked.
 --  * Every handler runs inside xpcall. Errors go to a 20 entry ring in the SavedVariables and are
---    shown by /autotrack report. Nothing is printed for them.
+--    shown by /gigatrack report. Nothing is printed for them.
 --  * The 0.5s re-check creates no tables or closures of its own. (GetTrackingInfo returns a
 --    table, which belongs to the client.)
 --
@@ -31,20 +32,23 @@
 -- perCharacter), EditMacro(index, name, icon, body), PickupMacro, Constants.MacroConsts (Blizzard_MacroUI).
 local addonName = ...
 
-local BUTTON_NAME = "AutoTrackButton"
-local LEGACY_BUTTON_NAME = "HunterHelperAutoTrackButton" -- the macro first handed out; keep it working
+local BUTTON_NAME = "GigaTrackButton"
+local ALIAS_NAMES = { "AutoTrackButton", "HunterHelperAutoTrackButton" } -- names macros already use; keep them working
 local TICK = 0.5
 local TEST_SECONDS = 5
 local LOG_SIZE = 20
 local FALLBACK_ICON = "Interface\\Icons\\Ability_Tracking"
-local MACRO_NAME = "AutoTrack"
+local MACRO_NAME = "GigaTrack"
+local OLD_MACRO_NAME = "AutoTrack" -- updated in place to the new body
 local MACRO_ICON = "Ability_Tracking"
 local MACRO_BODY = "/click " .. BUTTON_NAME
-local PREFIX = "AutoTrack: "
+local PREFIX = "GigaTrack: "
 
--- Binding labels are our own globals, set for every class so the key bindings screen reads well.
-_G["BINDING_HEADER_AUTOTRACK"] = "AutoTrack"
+-- The binding label is our own global, set for every class so the key bindings screen reads well.
+-- The key bindings screen looks up BINDING_HEADER_<header> from Bindings.xml and shows the raw
+-- key when it is missing, so the header label is set here too.
 _G["BINDING_NAME_CLICK " .. BUTTON_NAME .. ":LeftButton"] = "Track my target's creature type"
+_G.BINDING_HEADER_GigaTrack = "GigaTrack"
 
 local _, class = UnitClass("player")
 if class ~= "HUNTER" then return end
@@ -69,7 +73,8 @@ local DEFAULTS = {
 
 local db
 local driver, icon, tex, border, label, mmButton, mmTex
-local buttons = {} -- AutoTrackButton (the icon) and its legacy alias, always kept identical
+local buttons = {} -- GigaTrackButton (the icon) and its aliases, always kept identical
+local dormant = false -- the old AutoTrack add-on is loaded: build nothing, only import settings
 local frameShown, alphaNow = false, 1 -- what the secure icon frame really is
 local iconSpell, iconDesat, pendingSpell = nil, false, nil
 local dragging = false
@@ -269,16 +274,21 @@ end
 
 -- ------------------------------------------------------------------- macro --
 
--- Finds the AutoTrack macro among account macros (1..) and character macros (after the account block).
-local function findMacro()
+-- Finds a macro by name among account macros (1..) and character macros (after the account block).
+local function findNamed(name)
 	local numAccount, numChar = GetNumMacros()
 	local base = (Constants and Constants.MacroConsts and Constants.MacroConsts.MAX_ACCOUNT_MACROS) or 120
 	for i = 1, numAccount do
-		if GetMacroInfo(i) == MACRO_NAME then return i end
+		if GetMacroInfo(i) == name then return i end
 	end
 	for i = base + 1, base + numChar do
-		if GetMacroInfo(i) == MACRO_NAME then return i end
+		if GetMacroInfo(i) == name then return i end
 	end
+end
+
+-- Our macro first, then the old "AutoTrack" one, which is renamed and rewritten instead of duplicated.
+local function findMacro()
+	return findNamed(MACRO_NAME) or findNamed(OLD_MACRO_NAME)
 end
 
 local function makeMacro()
@@ -304,9 +314,9 @@ local function makeMacro()
 	end
 	local ok = pcall(PickupMacro, index)
 	if ok then
-		say("AutoTrack macro is on your cursor, drop it on your action bar.")
+		say("GigaTrack macro is on your cursor, drop it on your action bar.")
 	else
-		say("AutoTrack macro is made. Open /macro and drag it to your action bar.")
+		say("GigaTrack macro is made. Open /macro and drag it to your action bar.")
 	end
 	return true
 end
@@ -314,14 +324,14 @@ end
 local function setLocked(locked)
 	db.locked = locked
 	applyLock()
-	say(locked and "locked" or "unlocked, drag the icon, then /autotrack lock")
+	say(locked and "locked" or "unlocked, drag the icon, then /gigatrack lock")
 	refresh()
 end
 
 local function setMinimap(show)
 	db.minimap = show
 	applyMinimapLook()
-	say(show and "minimap button shown" or "minimap button hidden, /autotrack minimap shows it again")
+	say(show and "minimap button shown" or "minimap button hidden, /gigatrack minimap shows it again")
 end
 
 local function setEnabled(on)
@@ -353,14 +363,14 @@ local function tick() refresh() end
 -- ------------------------------------------------------------------- slash --
 
 local function help()
-	say("/autotrack on | off  reminder icon")
-	say("/autotrack macro  make the one-key track macro")
-	say("/autotrack minimap  show or hide the minimap button")
-	say("/autotrack unlock | lock  move the icon (shift+drag also moves it)")
-	say("/autotrack scale 0.5-2")
-	say("/autotrack test  show the icon for " .. TEST_SECONDS .. " seconds")
-	say("/autotrack report  recent errors")
-	say("/autotrack reset  reset position and the error log")
+	say("/gigatrack on | off  reminder icon")
+	say("/gigatrack macro  make the one-key track macro")
+	say("/gigatrack minimap  show or hide the minimap button")
+	say("/gigatrack unlock | lock  move the icon (shift+drag also moves it)")
+	say("/gigatrack scale 0.5-2")
+	say("/gigatrack test  show the icon for " .. TEST_SECONDS .. " seconds")
+	say("/gigatrack report  recent errors")
+	say("/gigatrack reset  reset position and the error log")
 	say("Macro: /click " .. BUTTON_NAME)
 end
 
@@ -421,7 +431,7 @@ local function tooltipFor(self)
 	else
 		GameTooltip:SetText(name and ("Click to track " .. name) or "Nothing to track")
 	end
-	GameTooltip:AddLine(db.locked and "Shift+drag to move" or "Drag to move. /autotrack lock when done.")
+	GameTooltip:AddLine(db.locked and "Shift+drag to move" or "Drag to move. /gigatrack lock when done.")
 	GameTooltip:Show()
 end
 
@@ -467,17 +477,20 @@ local function build()
 	icon:SetScript("OnEnter", tooltipFor)
 	icon:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 
-	-- The legacy name stays a separate secure button that follows the same attributes.
-	local alias = _G[LEGACY_BUTTON_NAME] or CreateFrame("Button", LEGACY_BUTTON_NAME, UIParent, "SecureActionButtonTemplate")
-	alias:RegisterForClicks("AnyUp")
-	alias:SetAttribute("useOnKeyDown", false)
-	buttons[1], buttons[2] = icon, alias
+	-- The old names stay separate secure buttons that follow the same attributes.
+	buttons[1] = icon
+	for _, name in ipairs(ALIAS_NAMES) do
+		local alias = _G[name] or CreateFrame("Button", name, UIParent, "SecureActionButtonTemplate")
+		alias:RegisterForClicks("AnyUp")
+		alias:SetAttribute("useOnKeyDown", false)
+		buttons[#buttons + 1] = alias
+	end
 end
 
 local function buildMinimap()
 	if not Minimap then return end
 	-- A plain Button on the Minimap: not secure, never touches a protected frame.
-	mmButton = CreateFrame("Button", "AutoTrackMinimapButton", Minimap)
+	mmButton = CreateFrame("Button", "GigaTrackMinimapButton", Minimap)
 	mmButton:SetSize(31, 31)
 	mmButton:SetFrameStrata("MEDIUM")
 	mmButton:SetFrameLevel(8)
@@ -517,7 +530,7 @@ local function buildMinimap()
 	mmButton:SetScript("OnEnter", function(self)
 		if not GameTooltip then return end
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText("AutoTrack: reminder " .. (db.enabled and "on" or "off"))
+		GameTooltip:SetText("GigaTrack: reminder " .. (db.enabled and "on" or "off"))
 		GameTooltip:AddLine("Left click: reminder on/off")
 		GameTooltip:AddLine("Right click: lock/unlock icon")
 		GameTooltip:Show()
@@ -527,10 +540,10 @@ local function buildMinimap()
 	applyMinimapLook()
 end
 
--- Saved data. AutoTrackDB may hold keys from AutoTrack 0.1.x (enabled, scope, default, version):
--- only the keys this add-on uses are kept, so scope, default and version go. Values from the
--- HunterHelper_AutoTrackDB of AutoTrack 0.3.0 are copied in once, when that variable is present,
--- and win over the older ones. The `migrated` flag makes this safe to run any number of times.
+-- Saved data. GigaTrackDB is ours. Values from AutoTrackDB (the old add-on) are copied in once, when
+-- that variable is present, and the `migrated` flag makes this safe to run any number of times. Only
+-- the keys this add-on uses are kept and wrong typed values fall back to defaults. AutoTrackDB is only
+-- readable while the old AutoTrack folder is installed, so PLAYER_LOGIN tries again. It is never written.
 local KEEP = { log = true, logPos = true, migrated = true }
 local function migrate()
 	for k in pairs(DEFAULTS) do KEEP[k] = true end
@@ -540,7 +553,7 @@ local function migrate()
 	for k, v in pairs(DEFAULTS) do
 		if type(db[k]) ~= type(v) then db[k] = v end
 	end
-	local old = HunterHelper_AutoTrackDB
+	local old = AutoTrackDB
 	if not db.migrated and type(old) == "table" then
 		for k, v in pairs(DEFAULTS) do
 			if type(old[k]) == type(v) then db[k] = old[k] end
@@ -549,9 +562,16 @@ local function migrate()
 	end
 end
 
+local function addonLoaded(name)
+	local isLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+	return isLoaded and isLoaded(name) or false
+end
+
+local OLD_LINE = "the old AutoTrack add-on is also loaded, so GigaTrack stays hidden this launch. Remove the AutoTrack folder from your AddOns folder after this launch."
+
 local function init()
-	AutoTrackDB = AutoTrackDB or {}
-	db = AutoTrackDB
+	GigaTrackDB = GigaTrackDB or {}
+	db = GigaTrackDB
 	migrate()
 	if type(db.log) ~= "table" or type(db.logPos) ~= "number" then resetLog() end
 	for _, e in ipairs(pending) do
@@ -559,12 +579,20 @@ local function init()
 		db.log[db.logPos] = e
 	end
 	pending = {}
+	driver:RegisterEvent("PLAYER_LOGIN")
+	_G["SLASH_GIGATRACK1"] = "/gigatrack"
+	if addonLoaded("AutoTrack") then
+		-- Both add-ons would show an icon. Import the settings, build nothing, ask for the folder to go.
+		dormant = true
+		SlashCmdList["GIGATRACK"] = function() say(OLD_LINE) end
+		return
+	end
 	build()
 	applyPlacement()
 	applyLock()
 	buildMinimap()
-	SlashCmdList["AUTOTRACK"] = function(msg) guard(function() slash(msg) end) end
-	_G["SLASH_AUTOTRACK1"] = "/autotrack"
+	SlashCmdList["GIGATRACK"] = function(msg) guard(function() slash(msg) end) end
+	_G["SLASH_GIGATRACK2"] = "/autotrack"
 	driver:RegisterEvent("PLAYER_TARGET_CHANGED")
 	driver:RegisterEvent("PLAYER_REGEN_ENABLED")
 	driver:RegisterEvent("MINIMAP_UPDATE_TRACKING")
@@ -572,13 +600,12 @@ local function init()
 	driver:RegisterEvent("PLAYER_ENTERING_WORLD")
 	driver:RegisterUnitEvent("UNIT_FLAGS", "target")
 	driver:RegisterUnitEvent("UNIT_TARGETABLE_CHANGED", "target")
-	driver:RegisterEvent("PLAYER_LOGIN")
 	refresh()
 end
 
 local function adviseOldAddon()
-	local isLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
-	if isLoaded and (isLoaded("HunterHelper") or isLoaded("HunterHelper_AutoTrack")) then
+	if dormant then say(OLD_LINE); return end
+	if addonLoaded("HunterHelper") or addonLoaded("HunterHelper_AutoTrack") then
 		say("an older version of this add-on is also loaded. Please remove the HunterHelper and HunterHelper_AutoTrack folders from your AddOns folder.")
 	end
 end
@@ -593,19 +620,20 @@ driver:SetScript("OnEvent", function(_, event, a1)
 	elseif event == "PLAYER_LOGIN" then
 		driver:UnregisterEvent("PLAYER_LOGIN")
 		guard(function()
-			-- The old add-on's variable can arrive after ours: try the import again once everything is loaded.
-			if not db.migrated and type(HunterHelper_AutoTrackDB) == "table" then
-				migrate(); applyPlacement(); applyLock(); applyMinimapPosition(); applyMinimapLook(); refresh()
+			-- AutoTrackDB can arrive after ours: try the import again once everything is loaded.
+			if not db.migrated and type(AutoTrackDB) == "table" then
+				migrate()
+				if not dormant then applyPlacement(); applyLock(); applyMinimapPosition(); applyMinimapLook(); refresh() end
 			end
 			adviseOldAddon()
 		end)
-	elseif db then
+	elseif db and not dormant then
 		curEvent, curArg1 = event, a1
 		guard(dispatch)
 	end
 end)
 driver:SetScript("OnUpdate", function(_, elapsed)
-	if not db then return end
+	if not db or dormant then return end
 	acc = acc + elapsed
 	if acc < TICK then return end
 	acc = 0

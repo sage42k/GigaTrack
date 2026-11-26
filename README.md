@@ -1,12 +1,12 @@
-# AutoTrack
+# GigaTrack
 
-**[Download AutoTrack 0.3.2](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.3.2.zip)**
+**[Download GigaTrack 0.4.0](https://github.com/sage42k/GigaTrack/releases/latest/download/GigaTrack-0.4.0.zip)**
 
 ## How to track
 
-Click the icon, or make the macro with `/autotrack macro`.
+Click the icon, or make a macro with `/gigatrack macro`, or use `/click GigaTrackButton`.
 
-The macro is named "AutoTrack" and lands on your cursor. Drop it on your action bar for a one-key track. By hand it is `/click AutoTrackButton`. Do not add `LeftButton 1` to it, that sends a key-down click which AutoTrack ignores on purpose, so a press never casts twice. `/click HunterHelperAutoTrackButton` still works too. You can also bind a key: Options, Keybindings, AddOns, AutoTrack.
+The macro is named "GigaTrack" and lands on your cursor. Drop it on your action bar for a one-key track. By hand it is `/click GigaTrackButton`. Do not add `LeftButton 1` to it, that sends a key-down click which GigaTrack ignores on purpose, so a press never casts twice. The old `/click AutoTrackButton` and `/click HunterHelperAutoTrackButton` still work, and an old macro named "AutoTrack" is updated in place by `/gigatrack macro`. You can also bind a key: Options, Keybindings, AddOns, GigaTrack.
 
 ## What it does
 
@@ -14,21 +14,27 @@ For hunters on WoW Forever. When your target's creature type has a Track spell y
 
 The icon hides when the right track is active, when you lose the target, when the target dies, or when you have not learned the track. When nothing needs tracking a click does nothing, and the tooltip says "Nothing to track".
 
+## Install
+
+Copy the `GigaTrack` folder into `World of Warcraft\_forever_\Interface\AddOns\GigaTrack`, then close the game completely and start it again. A full restart is needed, `/reload` is not enough.
+
+## Coming from AutoTrack
+
+GigaTrack is AutoTrack under a new name, because another add-on already uses "AutoTrack" on CurseForge.
+
+To carry over your icon position, scale and settings, keep the old `AutoTrack` folder for one launch. GigaTrack copies your settings across once, and keeps its icon hidden that launch so you do not see two. It prints one line to remind you. Then delete the `AutoTrack` folder. If you delete it before the first launch, you simply start with the defaults.
+
 ## Minimap button
 
-Left click turns the reminder on or off. Right click locks or unlocks the icon. Drag it to move it around the minimap. `/autotrack minimap` hides or shows it.
+Left click turns the reminder on or off. Right click locks or unlocks the icon. Drag it to move it around the minimap. `/gigatrack minimap` hides or shows it.
 
 ## Moving the icon
 
-Hold Shift and drag the icon, out of combat. Or unlock it (`/autotrack unlock`, or right click the minimap button), drag it, and lock it again. `/autotrack scale 0.5-2` sizes it, new installs start at 0.75. `/autotrack test` shows it for 5 seconds. Position and size are saved.
-
-## Install
-
-Copy the `AutoTrack` folder into `World of Warcraft\_forever_\Interface\AddOns\`, then close the game completely and start it again. If you still have the `HunterHelper` or `HunterHelper_AutoTrack` folders, remove them, they clash with this add-on. Your old settings are carried over once if the old folder is still there for one start of the game.
+Hold Shift and drag the icon, out of combat. Or unlock it (`/gigatrack unlock`, or right click the minimap button), drag it, and lock it again. `/gigatrack scale 0.5-2` sizes it, new installs start at 0.75. `/gigatrack test` shows it for 5 seconds. Position and size are saved.
 
 ## Commands
 
-`/autotrack` shows help. `on`, `off`, `macro`, `minimap`, `unlock`, `lock`, `scale`, `test`, `report` (recent errors), `reset` (position and the error list).
+`/gigatrack` shows help, and `/autotrack` still works as the same command. `on`, `off`, `macro`, `minimap`, `unlock`, `lock`, `scale`, `test`, `report` (recent errors), `reset` (position and the error list).
 
 ## In combat
 
@@ -36,6 +42,6 @@ The game does not let add-ons change what a click casts during combat. If your t
 
 ## Feedback
 
-Found a bug or have an idea? [Open an issue](https://github.com/sage42k/AutoTrack/issues).
+Found a bug or have an idea? [Open an issue](https://github.com/sage42k/GigaTrack/issues).
 
 MIT licensed. By Sage42k.

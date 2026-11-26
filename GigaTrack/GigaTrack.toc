@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: GigaTrack
+## Notes: Hunters: an icon appears when your target needs a different Track spell. Click it to track. A minimap button makes a one-key macro. Nothing switches by itself. /gigatrack for options.
+## Author: Sage42k
+## Version: 0.4.0
+## IconTexture: Interface\Icons\Ability_Tracking
+## OptionalDeps: AutoTrack
+## SavedVariables: GigaTrackDB
+
+GigaTrack.lua
+Bindings.xml

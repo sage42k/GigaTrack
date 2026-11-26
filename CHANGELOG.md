@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+- Renamed from AutoTrack to GigaTrack, because another add-on already uses the name "AutoTrack" on CurseForge, and the CurseForge app overwrites a folder that shares a project's name. Folder `GigaTrack`, title "GigaTrack", `GigaTrack.toc`.
+- The track button is now `GigaTrackButton`: use `/click GigaTrackButton`. `AutoTrackButton` and `HunterHelperAutoTrackButton` still work and follow the same rules: out of combat only, nothing set when the track is already active.
+- `/gigatrack` is the command, and `/autotrack` still works. `/gigatrack macro` makes a macro named "GigaTrack" (`/click GigaTrackButton`). An existing macro named "AutoTrack" is updated in place, not duplicated.
+- Saved variable is now `GigaTrackDB`. Your settings are copied once from `AutoTrackDB`. That variable only loads while the old `AutoTrack` folder is installed, so keep the folder for one launch, then delete it. The import is tried again at login and is safe to repeat.
+- If the old AutoTrack add-on is loaded at the same time, GigaTrack stays hidden for that launch (it only imports settings) and prints one line asking you to remove the AutoTrack folder. Otherwise you would see two icons.
+- The key binding is under "GigaTrack" in the Keybindings screen. It clicks `GigaTrackButton`.
+
 ## 0.3.2
 
 - The icon is steady, it no longer flashes, and it is now the track button: click it to cast the track your target needs. Hover reads "Click to track Beast" (or the creature type), or "Nothing to track" when a click would do nothing.
