@@ -6,10 +6,13 @@
 --    indexed or used in arithmetic here; if one shows up we do nothing.
 --  * No Blizzard-owned global is written (the slash command only adds its own
 --    key to SlashCmdList) and nothing is hooked.
---  * C_Minimap.SetTracking is called untainted, outside combat lockdown. If it
---    does not take effect, or the client reports it blocked or forbidden for
---    this addon, we fall back to a secure button the player keybinds. Its
---    "spell" attribute is only ever changed out of combat.
+--  * C_Minimap.SetTracking is called untainted, in or out of combat (it has no
+--    combat restriction). If it does not take effect, or the client reports it
+--    blocked or forbidden for this addon out of combat, we fall back to a
+--    secure button the player keybinds. Its "spell" attribute is only ever
+--    changed out of combat.
+--  * If the client blocks SetTracking in combat, we remember that, hold the
+--    switch until combat ends and stay in automatic mode.
 local ADDON, ns = ...
 ns = ns or {}
 
@@ -50,7 +53,9 @@ local mode = "direct"       -- "direct" or "fallback"
 local lastSwitch = -1e9
 local retryArmed = false
 local pending = nil         -- { idx, key } awaiting confirmation
-local pendingCombat = false -- a refresh was skipped because of combat lockdown
+local pendingCombat = false -- a refresh was held back because of combat lockdown
+local combatBlocked = false -- the client refused SetTracking in combat
+local saidCombatBlocked = false
 local button, frame
 
 local function say(msg) print("AutoTrack: " .. msg) end
@@ -171,7 +176,7 @@ function refresh()
 	if not idx then return end -- not learned
 	if mode == "fallback" then setButtonSpell(key); return end
 	if active then return end
-	if InCombatLockdown() then pendingCombat = true; return end
+	if combatBlocked and InCombatLockdown() then pendingCombat = true; return end
 	local wait = lastSwitch + THROTTLE - GetTime()
 	if wait > 0 then armRetry(wait); return end
 	lastSwitch = GetTime()
@@ -200,6 +205,7 @@ local function slash(msg)
 		say("default " .. (arg == "none" and "none" or LABEL[db.default]))
 	elseif cmd == "retry" then
 		mode = "direct"
+		combatBlocked = false
 		say("mode direct")
 	elseif cmd == "" or cmd == "status" then
 		status()
@@ -221,7 +227,7 @@ local function onEvent(self, event, a1)
 		for k, v in pairs(DEFAULTS) do
 			if db[k] == nil then db[k] = v end
 		end
-		db.version = "0.1.0"
+		db.version = "0.1.1"
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
@@ -236,7 +242,19 @@ local function onEvent(self, event, a1)
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if pendingCombat then pendingCombat = false; refresh() end
 	elseif event == "ADDON_ACTION_BLOCKED" or event == "ADDON_ACTION_FORBIDDEN" then
-		if not issecret(a1) and a1 == ADDON then enterFallback() end
+		if issecret(a1) or a1 ~= ADDON then return end
+		if InCombatLockdown() and mode == "direct" then
+			-- Blocked in combat only: keep automatic mode, switch after combat.
+			combatBlocked = true
+			pending = nil
+			pendingCombat = true
+			if not saidCombatBlocked then
+				saidCombatBlocked = true
+				say("the game blocks tracking changes during combat, so AutoTrack will switch as soon as the fight ends.")
+			end
+		else
+			enterFallback()
+		end
 	end
 end
 

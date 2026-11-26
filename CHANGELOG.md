@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Automatic mode now switches tracking in combat too. C_Minimap.SetTracking has no combat restriction, so there is no reason to wait for the fight to end. The 3 second confirmation check works in combat as well.
+- If the client ever blocks SetTracking in combat (ADDON_ACTION_BLOCKED or ADDON_ACTION_FORBIDDEN naming AutoTrack), AutoTrack remembers that, holds the switch until combat ends, and stays in automatic mode. It says so once in chat. `/autotrack retry` forgets it.
+- Keybind mode is unchanged: its button spell is still only changed out of combat.
+
 ## 0.1.0
 
 - First release. Hunters only: when you target a creature, minimap tracking switches to the matching hunter track (beasts, humanoids, undead, demons, elementals, giants, dragonkin).

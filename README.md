@@ -8,7 +8,7 @@ Made for **WoW Forever** (game version 1.60.1).
 
 ## Download
 
-**[Download AutoTrack 0.1.0](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.1.0.zip)**
+**[Download AutoTrack 0.1.1](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.1.1.zip)**
 
 ## Install
 
@@ -34,7 +34,7 @@ That is it. On a hunter it starts working the first time you target something.
 
 - It only uses tracks your hunter has learned.
 - If the right track is already on, it does nothing.
-- If you target something mid fight, it waits until combat ends.
+- It switches mid fight too. If the game ever blocks that, it switches as soon as the fight ends.
 - On any class other than hunter it does nothing at all: no messages, no saved data.
 
 ## If it asks you for a key
@@ -44,6 +44,8 @@ Some game versions only let tracking change on a real key press. If AutoTrack de
 1. Open **Options**, **Keybindings**, then **AutoTrack (Hunter)**.
 2. Bind a key to **AutoTrack: track my target's type**.
 3. Target something and press your key. It turns on the matching track.
+
+In key mode the game does not let add-ons change the key during combat, so press it after the fight if you targeted something mid fight.
 
 ## Commands
 
