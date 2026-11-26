@@ -1,63 +1,38 @@
 # AutoTrack
 
-**[Download AutoTrack 0.3.1](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.3.1.zip)**
+**[Download AutoTrack 0.3.2](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.3.2.zip)**
 
-For hunters on WoW Forever. An icon pops up on your screen when your target needs a different Track spell. Press your AutoTrack macro or key, the icon goes away. Nothing ever switches by itself.
+## How to track
 
-Other classes see nothing: no chat, no commands, no icon.
+Click the icon, or make the macro with `/autotrack macro`.
 
-## Install
+The macro is named "AutoTrack" and lands on your cursor. Drop it on your action bar for a one-key track. By hand it is `/click AutoTrackButton`. Do not add `LeftButton 1` to it, that sends a key-down click which AutoTrack ignores on purpose, so a press never casts twice. `/click HunterHelperAutoTrackButton` still works too. You can also bind a key: Options, Keybindings, AddOns, AutoTrack.
 
-Copy the `AutoTrack` folder into `World of Warcraft\_forever_\Interface\AddOns\`. Because this is a new add-on for the game, close the game completely and start it again. `/reload` is not enough for a new add-on.
+## What it does
 
-If you still have the `HunterHelper` or `HunterHelper_AutoTrack` folders, remove them from your AddOns folder. You get one line at login if either is enabled. They clash with this add-on.
+For hunters on WoW Forever. When your target's creature type has a Track spell you know (beast, humanoid, undead, demon, elemental, giant, dragonkin) and that track is not active, a steady icon of the Track spell shows on screen. Click it to track. Hover it to read "Click to track Beast" (or whichever creature type it is). Players always count as humanoid. Nothing ever switches by itself. Other classes see nothing.
 
-Your settings (on or off, locked, scale, position) are carried over the first time AutoTrack loads. This works when the old `HunterHelper_AutoTrack` folder is still there for that one start of the game, so start the game once with both before removing the old folder. If you remove it first, AutoTrack just starts with its defaults.
+The icon hides when the right track is active, when you lose the target, when the target dies, or when you have not learned the track. When nothing needs tracking a click does nothing, and the tooltip says "Nothing to track".
 
-## What you see
+## Minimap button
 
-When you target something whose type has a Track spell you know (beast, humanoid, undead, demon, elemental, giant, dragonkin) and that track is not active, an icon of the Track spell pulses gently in the middle of your screen. Players always count as humanoid. Hover it to read: "Not tracking your target. Press your AutoTrack macro."
-
-The icon hides the moment the right track is active, when you lose the target, when the target dies, or when you have not learned the track. If your game has a reduced motion setting on, it does not pulse.
-
-## The macro
-
-Make a macro and put it on your bar:
-
-```
-/click AutoTrackButton
-```
-
-Or bind a key: Options, Keybindings, AddOns, AutoTrack, "Track my target's type". One press casts the track once.
-
-The macro `/click HunterHelperAutoTrackButton` still works, it is the same button under its old name. Use `/click AutoTrackButton` from now on.
+Left click turns the reminder on or off. Right click locks or unlocks the icon. Drag it to move it around the minimap. `/autotrack minimap` hides or shows it.
 
 ## Moving the icon
 
-It starts locked in the centre of the screen.
+Hold Shift and drag the icon, out of combat. Or unlock it (`/autotrack unlock`, or right click the minimap button), drag it, and lock it again. `/autotrack scale 0.5-2` sizes it, new installs start at 0.75. `/autotrack test` shows it for 5 seconds. Position and size are saved.
 
-- `/autotrack unlock` shows the icon with a green border and "drag me", so you can drag it where you want it.
-- `/autotrack lock` fixes it again.
-- `/autotrack scale 1.5` sizes it, from 0.5 to 2.
-- `/autotrack test` shows the icon for 5 seconds.
+## Install
 
-Position and size are saved.
+Copy the `AutoTrack` folder into `World of Warcraft\_forever_\Interface\AddOns\`, then close the game completely and start it again. If you still have the `HunterHelper` or `HunterHelper_AutoTrack` folders, remove them, they clash with this add-on. Your old settings are carried over once if the old folder is still there for one start of the game.
 
 ## Commands
 
-- `/autotrack` shows help
-- `/autotrack on` and `/autotrack off` turn the reminder icon on or off. The macro keeps working.
-- `/autotrack unlock`, `lock`, `scale 0.5-2`, `test`
-- `/autotrack report` lists recent errors, if there were any
-- `/autotrack reset` puts the icon back in the centre and clears the error list
+`/autotrack` shows help. `on`, `off`, `macro`, `minimap`, `unlock`, `lock`, `scale`, `test`, `report` (recent errors), `reset` (position and the error list).
 
-## The in-combat limit
+## In combat
 
-The game does not let add-ons change what a key casts during combat. So if you switch to a different creature type in the middle of a fight, the key keeps the previous track until combat ends. The icon still shows what is needed, and the key is brought up to date the moment combat ends.
-
-## Saved data
-
-`AutoTrackDB`: on or off, locked, scale, position, and a small log of the last 20 errors.
+The game does not let add-ons change what a click casts during combat. If your target needs a different track mid-fight, the icon keeps showing the track a click will cast, greyed out, and the tooltip says "Can change after combat". It updates when combat ends. If the needed track is already active, the icon fades out, but a click would still cast the earlier track until combat ends. You cannot move the icon or make the macro in combat.
 
 ## Feedback
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+
+- The icon is steady, it no longer flashes, and it is now the track button: click it to cast the track your target needs. Hover reads "Click to track Beast" (or the creature type), or "Nothing to track" when a click would do nothing.
+- In combat the icon always shows what a click will cast. If the target needs a different track it keeps the current one, greyed out, with the tooltip "Can change after combat". It updates when combat ends.
+- `/autotrack macro` makes or updates a per-character macro named "AutoTrack" (`/click AutoTrackButton`) and puts it on your cursor. Out of combat only.
+- Minimap button: left click turns the reminder on or off, right click locks or unlocks the icon, drag to move. `/autotrack minimap` hides or shows it.
+- Shift+drag moves the icon any time out of combat.
+- New installs start at scale 0.75. A saved scale is left alone.
+- `/click AutoTrackButton`, key bindings and mouse clicks cast exactly once, with the "cast on key down" setting on or off.
+
 ## 0.3.1
 
 - Now ships as plain "AutoTrack": folder `AutoTrack`, title "AutoTrack", `AutoTrack.toc`. It replaces the earlier AutoTrack 0.1.x and the 0.3.0 build that shipped as `HunterHelper_AutoTrack`. No HunterHelper wording is left in anything you see in game.
