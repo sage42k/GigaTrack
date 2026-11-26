@@ -1,72 +1,63 @@
 # AutoTrack
 
-> **AutoTrack now lives in [HunterHelper](https://github.com/sage42k/HunterHelper).** It has the same features plus a fix for quick target switching during the global cooldown. New installs should use HunterHelper.
+**[Download AutoTrack 0.3.1](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.3.1.zip)**
 
-**Hunters: target something, and your tracking follows.**
+For hunters on WoW Forever. An icon pops up on your screen when your target needs a different Track spell. Press your AutoTrack macro or key, the icon goes away. Nothing ever switches by itself.
 
-Stop opening the tracking menu. Target a wolf and AutoTrack turns on Track Beasts. Target a ghoul and it switches to Track Undead. That is the whole idea, and it stays out of your way otherwise.
-
-Made for **WoW Forever** (game version 1.60.1).
-
-## Download
-
-**[Download AutoTrack 0.1.2](https://github.com/sage42k/AutoTrack/releases/latest/download/AutoTrack-0.1.2.zip)**
+Other classes see nothing: no chat, no commands, no icon.
 
 ## Install
 
-1. Close the game.
-2. Unzip the download. You get a folder called `AutoTrack`.
-3. Move that folder into your add-ons folder:
-   `World of Warcraft\_forever_\Interface\AddOns\`
-4. Start the game and make sure AutoTrack is ticked on the AddOns screen at character select.
+Copy the `AutoTrack` folder into `World of Warcraft\_forever_\Interface\AddOns\`. Because this is a new add-on for the game, close the game completely and start it again. `/reload` is not enough for a new add-on.
 
-That is it. On a hunter it starts working the first time you target something.
+If you still have the `HunterHelper` or `HunterHelper_AutoTrack` folders, remove them from your AddOns folder. You get one line at login if either is enabled. They clash with this add-on.
 
-## What it switches to
+Your settings (on or off, locked, scale, position) are carried over the first time AutoTrack loads. This works when the old `HunterHelper_AutoTrack` folder is still there for that one start of the game, so start the game once with both before removing the old folder. If you remove it first, AutoTrack just starts with its defaults.
 
-| You target a... | AutoTrack turns on |
-|---|---|
-| Beast | Track Beasts |
-| Humanoid | Track Humanoids |
-| Undead | Track Undead |
-| Demon | Track Demons |
-| Elemental | Track Elementals |
-| Giant | Track Giants |
-| Dragonkin | Track Dragonkin |
+## What you see
 
-- It only uses tracks your hunter has learned.
-- If the right track is already on, it does nothing.
-- It switches mid fight too. If the game ever blocks that, it switches as soon as the fight ends.
-- On any class other than hunter it does nothing at all: no messages, no saved data.
+When you target something whose type has a Track spell you know (beast, humanoid, undead, demon, elemental, giant, dragonkin) and that track is not active, an icon of the Track spell pulses gently in the middle of your screen. Players always count as humanoid. Hover it to read: "Not tracking your target. Press your AutoTrack macro."
 
-## If it asks you for a key
+The icon hides the moment the right track is active, when you lose the target, when the target dies, or when you have not learned the track. If your game has a reduced motion setting on, it does not pulse.
 
-Some game versions only let tracking change on a real key press. If AutoTrack detects that, it tells you once in chat and switches to key mode:
+## The macro
 
-1. Open **Options**, **Keybindings**, then **AutoTrack (Hunter)**.
-2. Bind a key to **AutoTrack: track my target's type**.
-3. Target something and press your key. It turns on the matching track.
+Make a macro and put it on your bar:
 
-In key mode the game does not let add-ons change the key during combat, so press it after the fight if you targeted something mid fight.
+```
+/click AutoTrackButton
+```
 
-## Turn it off and on
+Or bind a key: Options, Keybindings, AddOns, AutoTrack, "Track my target's type". One press casts the track once.
 
-Want to pick tracking by hand for a while? Give AutoTrack a toggle key:
+The macro `/click HunterHelperAutoTrackButton` still works, it is the same button under its old name. Use `/click AutoTrackButton` from now on.
 
-1. Open **Options**, **Keybindings**, then **AutoTrack (Hunter)**.
-2. Bind a key to **AutoTrack: turn on or off**.
+## Moving the icon
 
-Press it once and AutoTrack stops switching, so your own tracking choice stays. Press it again to turn it back on. One short chat line tells you which. It remembers your choice between sessions, and it is safe to press mid fight.
+It starts locked in the centre of the screen.
+
+- `/autotrack unlock` shows the icon with a green border and "drag me", so you can drag it where you want it.
+- `/autotrack lock` fixes it again.
+- `/autotrack scale 1.5` sizes it, from 0.5 to 2.
+- `/autotrack test` shows the icon for 5 seconds.
+
+Position and size are saved.
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `/autotrack on` / `/autotrack off` | Turn it on or off (same as the toggle key) |
-| `/autotrack status` | Show what it is doing |
-| `/autotrack scope any` | Also switch for creatures you cannot attack (default: only attackable ones) |
-| `/autotrack default beasts` | Track to use for creatures with no hunter track, like critters (default: leave it alone) |
-| `/autotrack retry` | Leave key mode and try automatic switching again |
+- `/autotrack` shows help
+- `/autotrack on` and `/autotrack off` turn the reminder icon on or off. The macro keeps working.
+- `/autotrack unlock`, `lock`, `scale 0.5-2`, `test`
+- `/autotrack report` lists recent errors, if there were any
+- `/autotrack reset` puts the icon back in the centre and clears the error list
+
+## The in-combat limit
+
+The game does not let add-ons change what a key casts during combat. So if you switch to a different creature type in the middle of a fight, the key keeps the previous track until combat ends. The icon still shows what is needed, and the key is brought up to date the moment combat ends.
+
+## Saved data
+
+`AutoTrackDB`: on or off, locked, scale, position, and a small log of the last 20 errors.
 
 ## Feedback
 

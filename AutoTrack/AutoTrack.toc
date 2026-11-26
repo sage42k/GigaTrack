@@ -1,9 +1,11 @@
 ## Interface: 16001
 ## Title: AutoTrack
-## Notes: Hunters: switches minimap tracking to match the creature type you target. /autotrack for options.
+## Notes: Hunters: shows an icon when your target needs a different Track spell, and a one press button to cast it. Nothing switches by itself. /autotrack for options.
 ## Author: Sage42k
-## Version: 0.1.2
+## Version: 0.3.1
 ## IconTexture: Interface\Icons\Ability_Tracking
+## OptionalDeps: HunterHelper_AutoTrack
 ## SavedVariables: AutoTrackDB
 
 AutoTrack.lua
+Bindings.xml
