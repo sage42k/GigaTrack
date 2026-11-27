@@ -1,12 +1,16 @@
 # GigaTrack
 
-**[Download GigaTrack 0.4.0](https://github.com/sage42k/GigaTrack/releases/latest/download/GigaTrack-0.4.0.zip)**
+**[Get GigaTrack on CurseForge](https://www.curseforge.com/wow/addons/gigatrack)**, installs and updates through the CurseForge app.
+
+Prefer a manual install? [Download the latest zip](https://github.com/sage42k/GigaTrack/releases/latest).
 
 Tracking for hunters, without opening the menu.
 
 Target something. If you're not tracking its creature type, GigaTrack puts the right Track icon in the middle of your screen. Click it. Done.
 
 ## Setup
+
+Easiest: install it from CurseForge. Manual install:
 
 1. Drop the `GigaTrack` folder into `World of Warcraft\_forever_\Interface\AddOns`.
 2. Restart the game. A `/reload` won't pick up a new add-on.
